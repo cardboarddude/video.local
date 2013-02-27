@@ -115,6 +115,15 @@ endif;
 if (isset($search)):
   $videos = glob_files($search, 'videos');
 endif;
+
+if (isset($_GET['video'])):
+  require 'getid3-1.9.3/getid3/getid3.php';
+
+  $videopath = $_GET['video'];
+
+  $getID3 = new getID3;
+  $file = $getID3->analyze($videopath);
+endif;
 ?>
 
 <!DOCTYPE html>
@@ -130,6 +139,7 @@ endif;
     <!-- Le styles -->
     <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
     <link href="bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="http://vjs.zencdn.net/c/video-js.css" rel="stylesheet">
     <style>
       body { padding-top: 60px; /* 60px to make the container go all the way
       to the bottom of the topbar */ }
@@ -192,12 +202,12 @@ endif;
     <div class="navbar navbar-fixed-top navbar-inverse">
       <div class="navbar-inner">
         <div class="container">
-          <a class="brand" href="#">
+          <a class="brand" href="index.php">
             video.local
           </a>
           <form class="navbar-form pull-right" method="post" action="index.php">
             <div>
-              <input placeholder="Search movie title..." type="text">
+              <input placeholder="Search movie title..." type="text" name="search">
             </div>
           </form>
         </div>
@@ -207,11 +217,18 @@ endif;
       <div class="hero-unit">
         <div>
           <?php
-            if (isset($search)):
+            if (isset($videopath)): ?>
+              <video id="video_1" class="video-js vjs-default-skin" controls
+                preload="auto" width="<?php echo $file['video']['resolution_x'] ?>" height="<?php echo $file['video']['resolution_y'] ?>" poster="my_video_poster.png"
+                data-setup="{}">
+                <source src="<?php echo $videopath ?>" type='video/mp4'>
+              </video>
+            <?php
+            elseif (isset($search)):
               if (is_array($videos)):
                 echo "search results for \"$search\"...<br />";
                 foreach ($videos as $video):
-                  printf('<a href="video.php?video=%s">%s</a><br />', $video['path'] . $video['name'], $video['name']);
+                  printf('<a href="index.php?video=%s">%s</a><br />', $video['path'] . $video['name'], $video['name']);
                 endforeach;
               else:
                 echo $videos;
@@ -242,5 +259,6 @@ endif;
     </script>
     <script src="assets/js/bootstrap.js">
     </script>
+    <script src="http://vjs.zencdn.net/c/video.js"></script>
   </body>
 </html>

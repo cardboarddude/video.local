@@ -36,11 +36,8 @@ function globistr($string = '', $mbEncoding = ''/*optional e.g.'UTF-8'*/)
     return $return;
 }
 
-if ( ! function_exists('glob_recursive'))
-{
-    // Does not support flag GLOB_BRACE
-    
-    function glob_recursive($pattern, $flags = 0)
+function glob_recursive($pattern, $flags = 0)
+// Glob function for recursive folder search (looks in subfolders)
     {
         $files = glob($pattern, $flags);
 
@@ -50,10 +47,11 @@ if ( ! function_exists('glob_recursive'))
         }
         
         return $files;
-    }
 }
 
+
 function glob_files($filenames, $source_folder)
+// Searches for video files with keyword(s) $filenames inside $source_folder
 {
     if( !is_dir( $source_folder ) ) {
         die ( "Invalid directory.\n\n" );
@@ -115,7 +113,7 @@ if (isset($_POST['search'])):
 endif;
 
 if (isset($search)):
-	$videos = glob_files($search, '..\v.lv2\videos');
+	$videos = glob_files($search, 'videos');
 endif;
 ?>
 

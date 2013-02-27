@@ -110,19 +110,19 @@ function glob_files($filenames, $source_folder)
 
 if (isset($_POST['search'])):
   $search = $_POST['search'];
-endif;
-
-if (isset($search)):
   $videos = glob_files($search, 'videos');
-endif;
-
-if (isset($_GET['video'])):
-  require 'getid3-1.9.3/getid3/getid3.php';
-
+elseif (isset($_GET['video'])):
   $videopath = $_GET['video'];
 
-  $getID3 = new getID3;
-  $file = $getID3->analyze($videopath);
+  if (filesize($videopath) < 1073741824):
+    require 'getid3-1.9.5/getid3/getid3.php';
+
+    $getID3 = new getID3;
+    $file = $getID3->analyze($videopath);
+  else:
+    $file['video']['resolution_x'] = 850;
+    $file['video']['resolution_y'] = 400;
+  endif;
 endif;
 ?>
 
@@ -220,7 +220,9 @@ endif;
           <?php
             if (isset($videopath)): ?>
               <video id="video_1" class="video-js vjs-default-skin" controls
-                preload="auto" width="<?php echo $file['video']['resolution_x'] ?>" height="<?php echo $file['video']['resolution_y'] ?>" poster="my_video_poster.png"
+                preload="auto" width="<?php echo $file['video']['resolution_x'] ?>" 
+                height="<?php echo $file['video']['resolution_y'] ?>" 
+                poster="my_video_poster.png"
                 data-setup="{}">
                 <source src="<?php echo $videopath ?>" type='video/mp4'>
               </video>
